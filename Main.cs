@@ -8,10 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Parallel;
+using Pooler;
 using System.Threading;
 
-namespace WinFormsApplicationTest {
+namespace WinFormsApplicationParallelTest {
     public partial class Main: Form {
 		const int TASKS_COUNT_DEFAULT = 20000;
 		const int MIN_THREADS_DEFAULT = 5;
@@ -19,7 +19,7 @@ namespace WinFormsApplicationTest {
 		const int TASKS_PAUSE_MILISECONDS_DEFAULT = 10;
 		const int N_EXCEPTIONS = 0; // 0 or 1 means no exception, 2 means every second task throw an exception, 3 means every third task etc...
 
-		private Parallel.Pooler _pool = null;
+		private Pooler.Base _pool = null;
 
 		private System.Diagnostics.Stopwatch _stopWatch;
 		private Thread _reportThread = null;
@@ -43,6 +43,8 @@ namespace WinFormsApplicationTest {
 
         public Main () {
             this.InitializeComponent();
+
+			this._testType.SelectedItem = this._testType.Items[0];
 
 			this._tasksCount.Text = Main.TASKS_COUNT_DEFAULT.ToString();
 			this._minThreads.Text = Main.MIN_THREADS_DEFAULT.ToString();
@@ -86,63 +88,78 @@ namespace WinFormsApplicationTest {
 				(((float)this._currentlyRunningThreadsSlider.Value) / 100) * (this._maxThreadsCount - this._minThreadsCount)
 			));
 
-			this._pool = new Parallel.Pooler(poolStartThreadsCount, this._pauseMiliSeconds);
-			this._pool.AllDone += this._allDoneHandler;
-			this._pool.TaskDone += this._taskDoneHandler;
-			this._pool.ThreadException += this._threadExceptionHandler;
-			if (this._heapStartCheckbox.Checked) {
-				for (int i = 0; i < this._tasksCountValue; i++) {
-					this._pool.Add(
-						this._taskProvider(i),
-						false,
-						System.Threading.ThreadPriority.Lowest,
-						false
-					);
+			if (this._testType.SelectedItem.ToString() == "Parallel test") {
+				Parallel pool = new Pooler.Parallel(poolStartThreadsCount, this._pauseMiliSeconds);
+				pool.AllDone += this._allDoneHandler;
+				pool.TaskDone += this._taskDoneHandler;
+				pool.TaskException += this._threadExceptionHandler;
+				if (this._heapStartCheckbox.Checked) {
+					for (int i = 0; i < this._tasksCountValue; i++) {
+						pool.Add(
+							new Pooler.TaskDelegate(this._task),
+							false,
+							System.Threading.ThreadPriority.Lowest,
+							false
+						);
+					}
+					this._pool.StartProcessing();
+				} else {
+					for (int i = 0; i < this._tasksCountValue; i++) {
+						pool.Add(
+							new Pooler.TaskDelegate(this._task),
+							true,
+							System.Threading.ThreadPriority.Lowest,
+							false
+						);
+					}
 				}
-				this._pool.StartProcessing();
+				this._pool = pool;
 			} else {
-				for (int i = 0; i < this._tasksCountValue; i++) {
-					this._pool.Add(
-						this._taskProvider(i),
-						true,
-						System.Threading.ThreadPriority.Lowest,
-						false
-					);
-				}
+				Repeater pool = Repeater.CreateNew(poolStartThreadsCount, this._tasksCountValue, this._pauseMiliSeconds);
+				pool.AllDone += this._allDoneHandler;
+				pool.TaskDone += this._taskDoneHandler;
+				pool.TaskException += this._threadExceptionHandler;
+				pool.Set(
+					new Pooler.TaskDelegate(this._task),
+					true,
+					System.Threading.ThreadPriority.Lowest,
+					false
+				);
+				this._pool = pool;
 			}
 		}
 
-		private Pooler.TaskDelegate _taskProvider (int i) {
-			return (Parallel.Pooler pool) => {
-				lock (this._taskBeginCounterLock) {
-					this._taskBeginCounter++;
+		private void _task (Pooler.Base pool) {
+			int i = 0;
+			lock (this._taskBeginCounterLock) {
+				i = this._taskBeginCounter;
+				this._taskBeginCounter++;
+			}
+			// some dummy computation to execute
+			long nthPrime;
+			nthPrime = this._findPrimeNumber(1000);
+			pool.Pause();
+			if (Main.N_EXCEPTIONS > 1) { 
+				if (i % 3 == Main.N_EXCEPTIONS) {
+					throw new Exception($"Exception modulo " + Main.N_EXCEPTIONS);
 				}
-				// some dummy computation to execute
-				long nthPrime;
-				nthPrime = this._findPrimeNumber(1000);
-				pool.Pause();
-				if (Main.N_EXCEPTIONS > 1) { 
-					if (i % 3 == Main.N_EXCEPTIONS) {
-						throw new Exception($"Exception modulo " + Main.N_EXCEPTIONS);
-					}
-				}
-				nthPrime = this._findPrimeNumber(1000);
-			};
+			}
+			nthPrime = this._findPrimeNumber(1000);
 		}
 
-		private void _threadExceptionHandler (Pooler pool, PoolerExceptionEventArgs poolThreadExceptionEventArgs) {
+		private void _threadExceptionHandler (Pooler.Base pool, ExceptionEventArgs poolThreadExceptionEventArgs) {
 			lock (this._taskExceptionCounterLock) {
 				this._taskExceptionCounter++;
 			}
 		}
 
-		private void _taskDoneHandler (Pooler pool, PoolerTaskDoneEventArgs poolTaskDoneEventArgs) {
+		private void _taskDoneHandler (Pooler.Base pool, TaskDoneEventArgs poolTaskDoneEventArgs) {
 			lock (this._taskDoneCounterLock) {
 				this._taskDoneCounter++;
-				this._currentlyRunningTasksCounter = poolTaskDoneEventArgs.RunningThreadsCount;
+				this._currentlyRunningTasksCounter = poolTaskDoneEventArgs.RunningTasksCount;
 			}
 		}
-		private void _allDoneHandler (Pooler pool, PoolerAllDoneEventArgs poolAllDoneEventArgs) {
+		private void _allDoneHandler (Pooler.Base pool, AllDoneEventArgs poolAllDoneEventArgs) {
 			this._peakThreadsCounter = poolAllDoneEventArgs.PeakThreadsCount;
 			if (poolAllDoneEventArgs.Exceptions.Count != this._taskExceptionCounter) {
 				throw new Exception("Exceptions counter is wrong!");

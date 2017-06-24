@@ -7,8 +7,8 @@
     <ProjectGuid>{03EA3138-A096-4AD4-AAFB-068DA2633508}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WinFormsApplicationTest</RootNamespace>
-    <AssemblyName>WinFormsApplicationTest</AssemblyName>
+    <RootNamespace>WinFormsApplicationParallelTest</RootNamespace>
+    <AssemblyName>WinFormsApplicationParallelTest</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,9 +31,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>WinFormsApplicationParallelTest.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Pooler, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Pooler.1.1.2\lib\net40\Pooler.dll</HintPath>
+    <Reference Include="Pooler, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pooler.2.1.0\lib\net40\Pooler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -65,6 +68,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

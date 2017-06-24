@@ -1,4 +1,4 @@
-﻿namespace WinFormsApplicationTest {
+﻿namespace WinFormsApplicationParallelTest {
     partial class Main {
         /// <summary>
         /// Required designer variable.
@@ -25,6 +25,8 @@
         private void InitializeComponent () {
 			this._startBtn = new System.Windows.Forms.Button();
 			this.definitionGroup = new System.Windows.Forms.GroupBox();
+			this._heapIncreaseForRunningThreadsCount = new System.Windows.Forms.CheckBox();
+			this._heapStartCheckbox = new System.Windows.Forms.CheckBox();
 			this._taskPauseMilisecondsValue = new System.Windows.Forms.TextBox();
 			this._currentlyRunningThreadsValue = new System.Windows.Forms.TextBox();
 			this._taskPauseMilisecondsMin = new System.Windows.Forms.TextBox();
@@ -67,8 +69,7 @@
 			this._threadsDoneProgressText = new System.Windows.Forms.TextBox();
 			this.threadsDoneProgressLabel = new System.Windows.Forms.Label();
 			this._stopBtn = new System.Windows.Forms.Button();
-			this._heapStartCheckbox = new System.Windows.Forms.CheckBox();
-			this._heapIncreaseForRunningThreadsCount = new System.Windows.Forms.CheckBox();
+			this._testType = new System.Windows.Forms.ComboBox();
 			this.definitionGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._taskPauseMilisecondsSlider)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._currentlyRunningThreadsSlider)).BeginInit();
@@ -88,6 +89,7 @@
 			// 
 			// definitionGroup
 			// 
+			this.definitionGroup.Controls.Add(this._testType);
 			this.definitionGroup.Controls.Add(this._heapIncreaseForRunningThreadsCount);
 			this.definitionGroup.Controls.Add(this._heapStartCheckbox);
 			this.definitionGroup.Controls.Add(this._taskPauseMilisecondsValue);
@@ -112,6 +114,26 @@
 			this.definitionGroup.TabIndex = 13;
 			this.definitionGroup.TabStop = false;
 			this.definitionGroup.Text = "Definition:";
+			// 
+			// _heapIncreaseForRunningThreadsCount
+			// 
+			this._heapIncreaseForRunningThreadsCount.AutoSize = true;
+			this._heapIncreaseForRunningThreadsCount.Location = new System.Drawing.Point(389, 249);
+			this._heapIncreaseForRunningThreadsCount.Name = "_heapIncreaseForRunningThreadsCount";
+			this._heapIncreaseForRunningThreadsCount.Size = new System.Drawing.Size(286, 21);
+			this._heapIncreaseForRunningThreadsCount.TabIndex = 31;
+			this._heapIncreaseForRunningThreadsCount.Text = "Heap increase for running threads count";
+			this._heapIncreaseForRunningThreadsCount.UseVisualStyleBackColor = true;
+			// 
+			// _heapStartCheckbox
+			// 
+			this._heapStartCheckbox.AutoSize = true;
+			this._heapStartCheckbox.Location = new System.Drawing.Point(176, 249);
+			this._heapStartCheckbox.Name = "_heapStartCheckbox";
+			this._heapStartCheckbox.Size = new System.Drawing.Size(200, 21);
+			this._heapStartCheckbox.TabIndex = 30;
+			this._heapStartCheckbox.Text = "Heap pool processing start";
+			this._heapStartCheckbox.UseVisualStyleBackColor = true;
 			// 
 			// _taskPauseMilisecondsValue
 			// 
@@ -562,25 +584,16 @@
 			this._stopBtn.UseVisualStyleBackColor = true;
 			this._stopBtn.Click += new System.EventHandler(this._stopBtn_Click);
 			// 
-			// _heapStartCheckbox
+			// _testType
 			// 
-			this._heapStartCheckbox.AutoSize = true;
-			this._heapStartCheckbox.Location = new System.Drawing.Point(20, 249);
-			this._heapStartCheckbox.Name = "_heapStartCheckbox";
-			this._heapStartCheckbox.Size = new System.Drawing.Size(200, 21);
-			this._heapStartCheckbox.TabIndex = 30;
-			this._heapStartCheckbox.Text = "Heap pool processing start";
-			this._heapStartCheckbox.UseVisualStyleBackColor = true;
-			// 
-			// _heapIncreaseForRunningThreadsCount
-			// 
-			this._heapIncreaseForRunningThreadsCount.AutoSize = true;
-			this._heapIncreaseForRunningThreadsCount.Location = new System.Drawing.Point(355, 249);
-			this._heapIncreaseForRunningThreadsCount.Name = "_heapIncreaseForRunningThreadsCount";
-			this._heapIncreaseForRunningThreadsCount.Size = new System.Drawing.Size(286, 21);
-			this._heapIncreaseForRunningThreadsCount.TabIndex = 31;
-			this._heapIncreaseForRunningThreadsCount.Text = "Heap increase for running threads count";
-			this._heapIncreaseForRunningThreadsCount.UseVisualStyleBackColor = true;
+			this._testType.FormattingEnabled = true;
+			this._testType.Items.AddRange(new object[] {
+            "Parallel test",
+            "Repeater test"});
+			this._testType.Location = new System.Drawing.Point(15, 246);
+			this._testType.Name = "_testType";
+			this._testType.Size = new System.Drawing.Size(146, 24);
+			this._testType.TabIndex = 32;
 			// 
 			// Main
 			// 
@@ -651,6 +664,7 @@
         private System.Windows.Forms.Button _stopBtn;
 		private System.Windows.Forms.CheckBox _heapIncreaseForRunningThreadsCount;
 		private System.Windows.Forms.CheckBox _heapStartCheckbox;
+		private System.Windows.Forms.ComboBox _testType;
 	}
 }
 
