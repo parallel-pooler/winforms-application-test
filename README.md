@@ -9,8 +9,8 @@ Windows Forms application test to measure threads limits, job counts, pausing mi
 ## How to
 - Clone or download project
 - Open in Visual Studio and update Pooler NuGet package
-- Open source file /Main/TestJob.cs and edit method:
-  - public void TestJob (Pooler.Base pool)
+- Open source file /Main/TestJob.cs and edit method `public void TestJob (Pooler.Base pool)`
+    - replace demo code to find prime numbers with our task execution
 - Run application and try to find optimal values for setting up your thread pool created with Pooler
 
 ## Printscreen
