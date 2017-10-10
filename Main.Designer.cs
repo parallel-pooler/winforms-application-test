@@ -85,7 +85,7 @@
 			this._startBtn.TabIndex = 0;
 			this._startBtn.Text = "Start test";
 			this._startBtn.UseVisualStyleBackColor = true;
-			this._startBtn.Click += new System.EventHandler(this._startBtn_Click);
+			this._startBtn.Click += new System.EventHandler(this.StartBtnOnClick);
 			// 
 			// definitionGroup
 			// 
